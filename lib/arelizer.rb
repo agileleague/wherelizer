@@ -14,25 +14,36 @@ class Arelizer
     ensure_type parsed, :call
     ensure_type parsed[1], :const
     model_name = parsed[1][1].to_s
-    method_name = parsed[2]
+    method_name = final_method_name(parsed[2])
 
-    hash = parsed[3]
-    where_conditions = parse_conditions(hash)
+    options_hash = {}
+    raw_options_hash = parsed[3]
+    raw_options_hash[1..-1].each_slice(2) do |key, val|
+      options_hash[var_value(key)] = val
+    end
 
-    "#{model_name}#{where_conditions}.#{method_name}"
+    where = parse_conditions(options_hash[:conditions]) if options_hash[:conditions]
+    order = parse_order(options_hash[:order]) if options_hash[:order]
+
+    "#{model_name}#{where}#{order}#{method_name}"
+  end
+
+  def final_method_name(method_name)
+    ".#{method_name}" unless method_name == :all
   end
 
   def parse_conditions node
-    ensure_conditions(node)
-    contents = node[2]
-    ensure_type(contents, :hash)
+    ensure_type(node, :hash)
     where = ''
 
-    keys_and_vals = contents[1..-1]
-    keys_and_vals.each_slice(2) do |key, val|
+    node[1..-1].each_slice(2) do |key, val|
       where += ".where(#{ruby2ruby.process(key)} => #{ruby2ruby.process(val)})"
     end
     where
+  end
+
+  def parse_order node
+    ".order(#{ruby2ruby.process(node)})"
   end
 
   def hash_name(node)
@@ -41,21 +52,19 @@ class Arelizer
     node[1][1]
   end
 
-  def symbol_name(node)
-    ensure_type(node, :lit)
+  def var_value(node)
+    ensure_type(node, [:lit, :str])
     node[1]
   end
 
-  def ensure_type(saxp, expected_type)
-    type = saxp[0]
-    raise "Unexpected type: #{expected_type} in #{saxp}" unless expected_type == type
+  def ensure_type(node, expected_type)
+    type = node[0]
+    expected_type = [expected_type] unless expected_type.respond_to?(:include?)
+    raise "Unexpected type: #{expected_type} in #{node}" unless expected_type.include?(type)
   end
 
   def ensure_ar_method_name(method_name)
     raise "Unexpected method name: #{method_name}" unless [:all, :first].include?(method_name)
   end
 
-  def ensure_conditions(node)
-    raise "This is not the conditions hash: #{node}" unless hash_name(node) == :conditions
-  end
 end
