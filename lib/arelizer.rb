@@ -1,11 +1,8 @@
-require 'rubygems'
 require 'ruby_parser'
 require 'ruby2ruby'
 
 class Arelizer
   attr_accessor :orig, :parsed, :final, :ruby2ruby
-
-  SAMPLE = 'WikiPage.all(:conditions => {:campaign_id => source_campaign.id, :name => target_names})'
 
   def initialize(orig)
     @orig = orig
