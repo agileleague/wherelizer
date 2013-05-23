@@ -11,8 +11,8 @@ class Arelizer
   end
 
   def convert
-    ensure_type parsed, :call
-    ensure_type parsed[1], :const
+    check_type parsed, :call
+    check_type parsed[1], :const
     model_name = parsed[1][1].to_s
     method_name = final_method_name(parsed[2])
 
@@ -33,7 +33,7 @@ class Arelizer
   end
 
   def parse_conditions node
-    ensure_type(node, :hash)
+    check_type(node, :hash)
     where = ''
 
     node[1..-1].each_slice(2) do |key, val|
@@ -47,24 +47,24 @@ class Arelizer
   end
 
   def hash_name(node)
-    ensure_type(node, :hash)
-    ensure_type(node[1], :lit)
+    check_type(node, :hash)
+    check_type(node[1], :lit)
     node[1][1]
   end
 
   def var_value(node)
-    ensure_type(node, [:lit, :str])
+    check_type(node, [:lit, :str])
     node[1]
   end
 
-  def ensure_type(node, expected_type)
+  def is_type?(node, expected_type)
     type = node[0]
     expected_type = [expected_type] unless expected_type.respond_to?(:include?)
-    raise "Unexpected type: #{expected_type} in #{node}" unless expected_type.include?(type)
+    expected_type.include? type
   end
 
-  def ensure_ar_method_name(method_name)
-    raise "Unexpected method name: #{method_name}" unless [:all, :first].include?(method_name)
+  def check_type(node, expected_type)
+    raise "Unexpected type: #{expected_type} in #{node}" unless is_type?(node, expected_type)
   end
 
 end
