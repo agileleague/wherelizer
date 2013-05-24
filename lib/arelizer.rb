@@ -1,5 +1,10 @@
 require 'ruby_parser'
 require 'ruby2ruby'
+require 'arelizer/sexp_extensions'
+
+class Sexp
+  include SexpExtensions
+end
 
 class Arelizer
   attr_accessor :orig, :parsed, :final, :ruby2ruby
@@ -11,8 +16,8 @@ class Arelizer
   end
 
   def convert
-    check_type parsed, :call
-    check_type parsed[1], :const
+    parsed.check_type :call
+    parsed[1].check_type :const
     model_name = parsed[1][1].to_s
     method_name = final_method_name(parsed[2])
 
@@ -33,7 +38,7 @@ class Arelizer
   end
 
   def parse_conditions node
-    check_type(node, :hash)
+    node.check_type :hash
     where = ''
 
     node[1..-1].each_slice(2) do |key, val|
@@ -47,24 +52,14 @@ class Arelizer
   end
 
   def hash_name(node)
-    check_type(node, :hash)
-    check_type(node[1], :lit)
+    node.check_type :hash
+    node[1].check_type :lit
     node[1][1]
   end
 
   def var_value(node)
-    check_type(node, [:lit, :str])
+    node.check_type [:lit, :str]
     node[1]
-  end
-
-  def is_type?(node, expected_type)
-    type = node[0]
-    expected_type = [expected_type] unless expected_type.respond_to?(:include?)
-    expected_type.include? type
-  end
-
-  def check_type(node, expected_type)
-    raise "Unexpected type: #{expected_type} in #{node}" unless is_type?(node, expected_type)
   end
 
 end
