@@ -17,16 +17,10 @@ class Arelizer
 
   def convert
     parsed.check_type :call
-    parsed[1].check_type :const
-    model_name = parsed[1][1].to_s
+    model_name = parsed[1].extract_const
     method_name = final_method_name(parsed[2])
 
-    options_hash = {}
-    raw_options_hash = parsed[3]
-    raw_options_hash[1..-1].each_slice(2) do |key, val|
-      options_hash[var_value(key)] = val
-    end
-
+    options_hash = parsed[3].to_hash
     where = parse_conditions(options_hash[:conditions]) if options_hash[:conditions]
     order = parse_order(options_hash[:order]) if options_hash[:order]
 
@@ -38,10 +32,9 @@ class Arelizer
   end
 
   def parse_conditions node
-    node.check_type :hash
     where = ''
 
-    node[1..-1].each_slice(2) do |key, val|
+    node.to_hash(false).each do |key, val|
       where += ".where(#{ruby2ruby.process(key)} => #{ruby2ruby.process(val)})"
     end
     where
@@ -49,17 +42,6 @@ class Arelizer
 
   def parse_order node
     ".order(#{ruby2ruby.process(node)})"
-  end
-
-  def hash_name(node)
-    node.check_type :hash
-    node[1].check_type :lit
-    node[1][1]
-  end
-
-  def var_value(node)
-    node.check_type [:lit, :str]
-    node[1]
   end
 
 end
