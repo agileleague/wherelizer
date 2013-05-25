@@ -17,10 +17,6 @@ describe Arelizer do
     assert_equal %q|WikiPage.where(:campaign_id => source_campaign.id).where(:name => target_names).first|, arelizer.convert
   end
 
-  #TODO: find(:all) and find(:first)
-  #TODO: check that strings are supported as well as symbols
-  #TODO: new hash syntax where we can
-
   it 'handles an order hash' do
     arelizer = Arelizer.new( %q|WikiPage.all(:order => 'name asc', :conditions => {:campaign_id => source_campaign.id, :name => target_names})|)
     assert_equal %q|WikiPage.where(:campaign_id => source_campaign.id).where(:name => target_names).order("name asc")|, arelizer.convert
@@ -44,6 +40,11 @@ describe Arelizer do
   it 'handles string conditions.' do
     arelizer = Arelizer.new %q|GameContent.all( :conditions => "campaign_id = 10")|
     assert_equal %q|GameContent.where("campaign_id = 10")|, arelizer.convert
+  end
+
+  it 'handles a variable assignment in front' do
+    arelizer = Arelizer.new %q|contents = GameContent.all( :conditions => "campaign_id = 10")|
+    assert_equal %q|contents = GameContent.where("campaign_id = 10")|, arelizer.convert
   end
 end
 

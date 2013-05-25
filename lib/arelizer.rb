@@ -16,19 +16,30 @@ class Arelizer
   end
 
   def convert
-    model_name = parsed.extract_receiver
-    method_name = final_method_name(parsed.extract_method_name)
+    if parsed.is_type? :lasgn
+      assignment = final_assignment(parsed.extract_assignment_target)
+      arel_call = parsed[2]
+    else
+      arel_call = parsed
+    end
+
+    model_name = arel_call.extract_receiver
+    method_name = final_method_name(arel_call.extract_method_name)
 
     # TODO: multiple params?
-    options_hash = parsed[3].to_hash
+    options_hash = arel_call[3].to_hash
     where = parse_conditions(options_hash[:conditions]) if options_hash[:conditions]
     order = parse_order(options_hash[:order]) if options_hash[:order]
 
-    "#{model_name}#{where}#{order}#{method_name}"
+    "#{assignment}#{model_name}#{where}#{order}#{method_name}"
   end
 
   def final_method_name(method_name)
     ".#{method_name}" unless method_name == :all
+  end
+
+  def final_assignment(assignment_target)
+    "#{assignment_target} = "
   end
 
   def parse_conditions node

@@ -19,6 +19,11 @@ module SexpExtensions
     self[1]
   end
 
+  def extract_assignment_target
+    check_type :lasgn
+    self[1].to_s
+  end
+
   ###
   # Extract the receiver of a method call.
   # Currently we assume this is a constant.
