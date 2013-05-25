@@ -12,11 +12,11 @@ class Arelizer
 
   def initialize(orig)
     @orig = orig
-    @parsed = RubyParser.new.parse(orig)
     @ruby2ruby = Ruby2Ruby.new
   end
 
   def convert
+    @parsed = RubyParser.new.parse(orig)
     assignment = handle_assignment
 
     model_name = parsed.extract_receiver

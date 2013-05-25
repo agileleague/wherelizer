@@ -47,6 +47,12 @@ describe Arelizer do
     assert_equal %q|contents = GameContent.where("campaign_id = 10")|, arelizer.convert
   end
 
+  it 'is idempotent' do
+    arelizer = Arelizer.new %q|contents = GameContent.all( :conditions => "campaign_id = 10")|
+    assert_equal %q|contents = GameContent.where("campaign_id = 10")|, arelizer.convert
+    assert_equal %q|contents = GameContent.where("campaign_id = 10")|, arelizer.convert
+  end
+
   it 'handles find(:all)' do
     arelizer = Arelizer.new %q|User.find(:all, :conditions => {:id => 1})|
     assert_equal %q|User.where(:id => 1)|, arelizer.convert
