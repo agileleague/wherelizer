@@ -56,5 +56,10 @@ describe Arelizer do
     arelizer = Arelizer.new %q|User.find(:first, :conditions => {:id => 1})|
     assert_equal %q|User.where(:id => 1).first|, arelizer.convert
   end
+
+  it 'handles select, joins, and group' do
+    arelizer = Arelizer.new %q|GameSystem.all(:select => 'game_systems.*, count(game_systems.id) AS count', :joins => :campaigns, :group => 'id')|
+    assert_equal %q|GameSystem.select("game_systems.*, count(game_systems.id) AS count").joins(:campaigns).group("id")|, arelizer.convert
+  end
 end
 

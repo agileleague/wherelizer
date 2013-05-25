@@ -23,10 +23,10 @@ class Arelizer
     method_name = handle_method_name
     options_hash = parsed.to_hash
 
-    where = parse_conditions(options_hash[:conditions]) if options_hash[:conditions]
-    order = parse_order(options_hash[:order]) if options_hash[:order]
+    where = parse_conditions(options_hash.delete(:conditions)) if options_hash[:conditions]
+    others = options_hash.map{|key, value| parse_basic_param(key, value)}.join
 
-    "#{assignment}#{model_name}#{where}#{order}#{method_name}"
+    "#{assignment}#{model_name}#{where}#{others}#{method_name}"
   end
 
   def handle_assignment
@@ -75,8 +75,7 @@ class Arelizer
     where
   end
 
-  def parse_order node
-    ".order(#{ruby2ruby.process(node)})"
+  def parse_basic_param name, value
+    ".#{name}(#{ruby2ruby.process(value)})"
   end
-
 end
