@@ -19,6 +19,26 @@ module SexpExtensions
     self[1]
   end
 
+  ###
+  # Extract the receiver of a method call.
+  # Currently we assume this is a constant.
+  def extract_receiver
+    check_type :call
+    self[1].extract_const
+  end
+
+  ###
+  # Extract the method name of a method call.
+  def extract_method_name
+    check_type :call
+    self[2]
+  end
+
+  ###
+  # Turn a sexp "hash" node into an actual Ruby hash.
+  # If process_keys is true, then we assume the hash keys are strings or symbols,
+  #   and extract the actual string or symbol to be the key in the resulting hash.
+  # Otherwise, we make the key the whole sexp node that is the key.
   def to_hash(process_keys=true)
     result = {}
     self[1..-1].each_slice(2) do |key, val|

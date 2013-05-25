@@ -16,10 +16,10 @@ class Arelizer
   end
 
   def convert
-    parsed.check_type :call
-    model_name = parsed[1].extract_const
-    method_name = final_method_name(parsed[2])
+    model_name = parsed.extract_receiver
+    method_name = final_method_name(parsed.extract_method_name)
 
+    # TODO: multiple params?
     options_hash = parsed[3].to_hash
     where = parse_conditions(options_hash[:conditions]) if options_hash[:conditions]
     order = parse_order(options_hash[:order]) if options_hash[:order]
