@@ -1,6 +1,7 @@
 require 'ruby_parser'
 require 'ruby2ruby'
 require 'arelizer/sexp_extensions'
+require 'pry'
 
 class Sexp
   include SexpExtensions
@@ -16,22 +17,36 @@ class Arelizer
   end
 
   def convert
-    if parsed.is_type? :lasgn
-      assignment = final_assignment(parsed.extract_assignment_target)
-      arel_call = parsed[2]
-    else
-      arel_call = parsed
-    end
+    assignment = handle_assignment
 
-    model_name = arel_call.extract_receiver
-    method_name = final_method_name(arel_call.extract_method_name)
+    model_name = parsed.extract_receiver
+    method_name = handle_method_name
+    options_hash = parsed.to_hash
 
-    # TODO: multiple params?
-    options_hash = arel_call[3].to_hash
     where = parse_conditions(options_hash[:conditions]) if options_hash[:conditions]
     order = parse_order(options_hash[:order]) if options_hash[:order]
 
     "#{assignment}#{model_name}#{where}#{order}#{method_name}"
+  end
+
+  def handle_assignment
+    if parsed.is_type? :lasgn
+      assignment = final_assignment(parsed.extract_assignment_target)
+      @parsed = @parsed[2]
+    end
+    assignment
+  end
+
+  def handle_method_name
+    method_name = parsed.extract_method_name
+    if method_name == :find
+      first_param = parsed[3]
+      @parsed = @parsed[4]
+      final_method_name(first_param.extract_val)
+    else
+      @parsed = @parsed[3]
+      final_method_name(method_name)
+    end
   end
 
   def final_method_name(method_name)

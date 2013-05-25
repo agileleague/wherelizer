@@ -46,5 +46,15 @@ describe Arelizer do
     arelizer = Arelizer.new %q|contents = GameContent.all( :conditions => "campaign_id = 10")|
     assert_equal %q|contents = GameContent.where("campaign_id = 10")|, arelizer.convert
   end
+
+  it 'handles find(:all)' do
+    arelizer = Arelizer.new %q|User.find(:all, :conditions => {:id => 1})|
+    assert_equal %q|User.where(:id => 1)|, arelizer.convert
+  end
+
+  it 'handles find(:first)' do
+    arelizer = Arelizer.new %q|User.find(:first, :conditions => {:id => 1})|
+    assert_equal %q|User.where(:id => 1).first|, arelizer.convert
+  end
 end
 
