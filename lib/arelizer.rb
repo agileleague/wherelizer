@@ -34,9 +34,18 @@ class Arelizer
   def parse_conditions node
     where = ''
 
-    node.to_hash(false).each do |key, val|
-      where += ".where(#{ruby2ruby.process(key)} => #{ruby2ruby.process(val)})"
+    if node.is_type? :hash
+      node.to_hash(false).each do |key, val|
+        where += ".where(#{ruby2ruby.process(key)} => #{ruby2ruby.process(val)})"
+      end
+    elsif node.is_type? :array
+      where = ".where(" + node.to_array.map{ |el| ruby2ruby.process(el) }.join(', ') + ")"
+    elsif node.is_type? :str
+      where = ".where(#{ruby2ruby.process(node)})"
+    else
+      raise "Unexpected type for conditions parameter. Expecting hash, array, or string."
     end
+
     where
   end
 

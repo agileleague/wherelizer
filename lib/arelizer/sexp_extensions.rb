@@ -40,11 +40,19 @@ module SexpExtensions
   #   and extract the actual string or symbol to be the key in the resulting hash.
   # Otherwise, we make the key the whole sexp node that is the key.
   def to_hash(process_keys=true)
+    check_type :hash
     result = {}
     self[1..-1].each_slice(2) do |key, val|
       result[process_keys ? key.extract_val : key] = val
     end
     result
+  end
+
+  ###
+  # Turns a sexp "array" node into an actual Ruby array of just the elements
+  def to_array
+    check_type :array
+    self[1..-1]
   end
 
 end

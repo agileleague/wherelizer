@@ -26,5 +26,24 @@ describe Arelizer do
     assert_equal %q|WikiPage.where(:campaign_id => source_campaign.id).where(:name => target_names).order("name asc")|, arelizer.convert
   end
 
+  it 'handles an array conditions with a param.' do
+    arelizer = Arelizer.new %q|GameContent.all( :conditions => ["campaign_id = ?", source_campaign.id])|
+    assert_equal %q|GameContent.where("campaign_id = ?", source_campaign.id)|, arelizer.convert
+  end
+
+  it 'handles an array conditions with two params.' do
+    arelizer = Arelizer.new %q|GameContent.all( :conditions => ["campaign_id = ? AND user_id = ?", source_campaign.id, 10])|
+    assert_equal %q|GameContent.where("campaign_id = ? AND user_id = ?", source_campaign.id, 10)|, arelizer.convert
+  end
+
+  it 'handles an array conditions with no params.' do
+    arelizer = Arelizer.new %q|GameContent.all( :conditions => ["campaign_id = 10"])|
+    assert_equal %q|GameContent.where("campaign_id = 10")|, arelizer.convert
+  end
+
+  it 'handles string conditions.' do
+    arelizer = Arelizer.new %q|GameContent.all( :conditions => "campaign_id = 10")|
+    assert_equal %q|GameContent.where("campaign_id = 10")|, arelizer.convert
+  end
 end
 
