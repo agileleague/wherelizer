@@ -4,22 +4,22 @@ describe Arelizer do
 
   it 'handles a conditions hash' do
     arelizer = Arelizer.new( %q|WikiPage.all(:conditions => {:campaign_id => source_campaign.id, :name => target_names})|)
-    assert_equal %q|WikiPage.where(:campaign_id => source_campaign.id).where(:name => target_names)|, arelizer.convert
+    assert_equal %q|WikiPage.where(campaign_id: source_campaign.id).where(name: target_names)|, arelizer.convert
   end
 
   it 'handles a numbers and strings as conditions' do
     arelizer = Arelizer.new( %q|WikiPage.all(:conditions => {:campaign_id => 5, :name => "Cool"})|)
-    assert_equal %q|WikiPage.where(:campaign_id => 5).where(:name => "Cool")|, arelizer.convert
+    assert_equal %q|WikiPage.where(campaign_id: 5).where(name: "Cool")|, arelizer.convert
   end
 
   it 'maintains a query for "first"' do
     arelizer = Arelizer.new( %q|WikiPage.first(:conditions => {:campaign_id => source_campaign.id, :name => target_names})|)
-    assert_equal %q|WikiPage.where(:campaign_id => source_campaign.id).where(:name => target_names).first|, arelizer.convert
+    assert_equal %q|WikiPage.where(campaign_id: source_campaign.id).where(name: target_names).first|, arelizer.convert
   end
 
   it 'handles an order hash' do
     arelizer = Arelizer.new( %q|WikiPage.all(:order => 'name asc', :conditions => {:campaign_id => source_campaign.id, :name => target_names})|)
-    assert_equal %q|WikiPage.where(:campaign_id => source_campaign.id).where(:name => target_names).order("name asc")|, arelizer.convert
+    assert_equal %q|WikiPage.where(campaign_id: source_campaign.id).where(name: target_names).order("name asc")|, arelizer.convert
   end
 
   it 'handles an array conditions with a param.' do
@@ -60,12 +60,12 @@ describe Arelizer do
 
   it 'handles find(:all)' do
     arelizer = Arelizer.new %q|User.find(:all, :conditions => {:id => 1})|
-    assert_equal %q|User.where(:id => 1)|, arelizer.convert
+    assert_equal %q|User.where(id: 1)|, arelizer.convert
   end
 
   it 'handles find(:first)' do
     arelizer = Arelizer.new %q|User.find(:first, :conditions => {:id => 1})|
-    assert_equal %q|User.where(:id => 1).first|, arelizer.convert
+    assert_equal %q|User.where(id: 1).first|, arelizer.convert
   end
 
   it 'handles select, joins, and group' do
@@ -75,7 +75,7 @@ describe Arelizer do
 
   it 'handles include and limit' do
     arelizer = Arelizer.new %q|Campaign.all( :conditions => {:id => 1}, :order => "campaigns.id ASC", :include => [:game_master, :game_system], :limit => @limit, :offset => @start)|
-    assert_equal %q|Campaign.where(:id => 1).order("campaigns.id ASC").includes([:game_master, :game_system]).limit(@limit).offset(@start)|, arelizer.convert
+    assert_equal %q|Campaign.where(id: 1).order("campaigns.id ASC").includes([:game_master, :game_system]).limit(@limit).offset(@start)|, arelizer.convert
   end
 
   it 'handles method calls in receiver' do
@@ -92,5 +92,11 @@ describe Arelizer do
     skip("TODO: Implement conditions variable usage or a good exception here")
     arelizer = Arelizer.new %q|campaigns = Campaign.all( :conditions => conditions, :order => "campaigns.id ASC", :include => [:game_master, :game_system], :limit => @limit, :offset => @start)|
   end
+
+  it 'handles strings in conditions hash keys' do
+    arelizer = Arelizer.new( %q|WikiPage.all(:conditions => {'wiki_pages.campaign_id' => 5, :name => "Cool"})|)
+    assert_equal %q|WikiPage.where("wiki_pages.campaign_id" => 5).where(name: "Cool")|, arelizer.convert
+  end
+
 end
 

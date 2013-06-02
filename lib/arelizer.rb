@@ -62,7 +62,11 @@ class Arelizer
 
     if node.is_type? :hash
       node.to_hash(false).each do |key, val|
-        where += ".where(#{ruby2ruby.process(key)} => #{ruby2ruby.process(val)})"
+        if key.is_type? :lit
+          where += ".where(#{key.extract_val}: #{ruby2ruby.process(val)})"
+        else
+          where += ".where(#{ruby2ruby.process(key)} => #{ruby2ruby.process(val)})"
+        end
       end
     elsif node.is_type? :array
       where = ".where(" + node.to_array.map{ |el| ruby2ruby.process(el) }.join(', ') + ")"
