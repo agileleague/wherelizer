@@ -29,7 +29,7 @@ module SexpExtensions
   # Currently we assume this is a constant.
   def extract_receiver
     check_type :call
-    self[1].extract_const
+    self[1]
   end
 
   ###

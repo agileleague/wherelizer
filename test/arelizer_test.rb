@@ -78,6 +78,16 @@ describe Arelizer do
     assert_equal %q|Campaign.where(:id => 1).order("campaigns.id ASC").includes([:game_master, :game_system]).limit(@limit).offset(@start)|, arelizer.convert
   end
 
+  it 'handles method calls in receiver' do
+    arelizer = Arelizer.new %q|@public_pcs = @campaign.game_characters.all(:order => 'id ASC')|
+    assert_equal %q|@public_pcs = @campaign.game_characters.order("id ASC")|, arelizer.convert
+  end
+
+  it 'handles several method calls in receiver' do
+    arelizer = Arelizer.new %q|@public_pcs = @campaign.parent_campaign.parent_campaign.game_characters.all(:order => 'id ASC')|
+    assert_equal %q|@public_pcs = @campaign.parent_campaign.parent_campaign.game_characters.order("id ASC")|, arelizer.convert
+  end
+
   it 'explains why it cant use a conditions variable' do
     skip("TODO: Implement conditions variable usage or a good exception here")
     arelizer = Arelizer.new %q|campaigns = Campaign.all( :conditions => conditions, :order => "campaigns.id ASC", :include => [:game_master, :game_system], :limit => @limit, :offset => @start)|

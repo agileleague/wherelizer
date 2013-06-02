@@ -19,14 +19,14 @@ class Arelizer
     @parsed = RubyParser.new.parse(orig)
     assignment = handle_assignment
 
-    model_name = parsed.extract_receiver
+    receiver = ruby2ruby.process(parsed.extract_receiver)
     method_name = handle_method_name
     options_hash = parsed.to_hash
 
     where = parse_conditions(options_hash.delete(:conditions)) if options_hash[:conditions]
     others = options_hash.map{|key, value| parse_basic_param(key, value)}.join
 
-    "#{assignment}#{model_name}#{where}#{others}#{method_name}"
+    "#{assignment}#{receiver}#{where}#{others}#{method_name}"
   end
 
   def handle_assignment
