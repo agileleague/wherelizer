@@ -76,6 +76,7 @@ class Arelizer
   end
 
   def parse_basic_param name, value
-    ".#{name}(#{ruby2ruby.process(value)})"
+    method_name = name.to_s == 'include' ? 'includes' : name.to_s
+    ".#{method_name}(#{ruby2ruby.process(value)})"
   end
 end

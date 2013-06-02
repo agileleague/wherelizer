@@ -75,7 +75,7 @@ describe Arelizer do
 
   it 'handles include and limit' do
     arelizer = Arelizer.new %q|Campaign.all( :conditions => {:id => 1}, :order => "campaigns.id ASC", :include => [:game_master, :game_system], :limit => @limit, :offset => @start)|
-    assert_equal %q|Campaign.where(:id => 1).order("campaigns.id ASC").include([:game_master, :game_system]).limit(@limit).offset(@start)|, arelizer.convert
+    assert_equal %q|Campaign.where(:id => 1).order("campaigns.id ASC").includes([:game_master, :game_system]).limit(@limit).offset(@start)|, arelizer.convert
   end
 
   it 'explains why it cant use a conditions variable' do
