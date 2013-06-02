@@ -20,7 +20,7 @@ module SexpExtensions
   end
 
   def extract_assignment_target
-    check_type :lasgn
+    check_type [:lasgn, :iasgn]
     self[1].to_s
   end
 

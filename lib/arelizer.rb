@@ -30,7 +30,7 @@ class Arelizer
   end
 
   def handle_assignment
-    if parsed.is_type? :lasgn
+    if parsed.is_type? [:lasgn, :iasgn]
       assignment = final_assignment(parsed.extract_assignment_target)
       @parsed = @parsed[2]
     end

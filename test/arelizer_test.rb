@@ -47,6 +47,11 @@ describe Arelizer do
     assert_equal %q|contents = GameContent.where("campaign_id = 10")|, arelizer.convert
   end
 
+  it 'handles an instance variable assignment in front' do
+    arelizer = Arelizer.new %q|@contents = GameContent.all( :conditions => "campaign_id = 10")|
+    assert_equal %q|@contents = GameContent.where("campaign_id = 10")|, arelizer.convert
+  end
+
   it 'is idempotent' do
     arelizer = Arelizer.new %q|contents = GameContent.all( :conditions => "campaign_id = 10")|
     assert_equal %q|contents = GameContent.where("campaign_id = 10")|, arelizer.convert
@@ -66,6 +71,16 @@ describe Arelizer do
   it 'handles select, joins, and group' do
     arelizer = Arelizer.new %q|GameSystem.all(:select => 'game_systems.*, count(game_systems.id) AS count', :joins => :campaigns, :group => 'id')|
     assert_equal %q|GameSystem.select("game_systems.*, count(game_systems.id) AS count").joins(:campaigns).group("id")|, arelizer.convert
+  end
+
+  it 'handles include and limit' do
+    arelizer = Arelizer.new %q|Campaign.all( :conditions => {:id => 1}, :order => "campaigns.id ASC", :include => [:game_master, :game_system], :limit => @limit, :offset => @start)|
+    assert_equal %q|Campaign.where(:id => 1).order("campaigns.id ASC").include([:game_master, :game_system]).limit(@limit).offset(@start)|, arelizer.convert
+  end
+
+  it 'explains why it cant use a conditions variable' do
+    skip("TODO: Implement conditions variable usage or a good exception here")
+    arelizer = Arelizer.new %q|campaigns = Campaign.all( :conditions => conditions, :order => "campaigns.id ASC", :include => [:game_master, :game_system], :limit => @limit, :offset => @start)|
   end
 end
 
