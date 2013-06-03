@@ -5,8 +5,7 @@ Gem::Specification.new do |s|
   s.date = %q{2013-05-22}
   s.description = %q{A gem for converting pre-arel ActiveRecord queries to their non-deprecated equivalents}
   s.email = %q{melinda@agileleague.com}
-  s.files = ["Rakefile", "lib/arelizer.rb"]
-  s.test_files = ["test/test_arelizer.rb"]
+  s.files = ["lib/arelizer.rb", "lib/arelizer/sexp_extensions.rb"]
   s.homepage = %q{http://github.com/agileleague/arelizer.git"}
   s.require_paths = ["lib"]
   s.summary = %q{ActiveRecord Query Arel-izer}
