@@ -1,7 +1,6 @@
 require 'ruby_parser'
 require 'ruby2ruby'
 require 'arelizer/sexp_extensions'
-require 'pry'
 
 class Sexp
   include SexpExtensions

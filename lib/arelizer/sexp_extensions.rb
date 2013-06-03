@@ -26,7 +26,6 @@ module SexpExtensions
 
   ###
   # Extract the receiver of a method call.
-  # Currently we assume this is a constant.
   def extract_receiver
     check_type :call
     self[1]
