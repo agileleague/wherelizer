@@ -1,12 +1,12 @@
 require 'ruby_parser'
 require 'ruby2ruby'
-require 'arelizer/sexp_extensions'
+require 'wherelizer/sexp_extensions'
 
 class Sexp
   include SexpExtensions
 end
 
-class Arelizer
+class Wherelizer
   attr_accessor :orig, :parsed, :final, :ruby2ruby
 
   def initialize(orig)

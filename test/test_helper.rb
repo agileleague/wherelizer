@@ -1,3 +1,3 @@
 require 'minitest/autorun'
 require 'minitest/pride'
-require 'arelizer'
+require 'wherelizer'
