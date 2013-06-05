@@ -1,8 +1,8 @@
 Gem::Specification.new do |s|
   s.name               = "wherelizer"
-  s.version            = "0.0.2"
+  s.version            = "0.0.4"
   s.authors = ["Melinda Weathers"]
-  s.date = %q{2013-05-22}
+  s.date = %q{2013-06-05}
   s.description = %q{A gem for converting pre-arel ActiveRecord queries to their non-deprecated equivalents}
   s.email = %q{melinda@agileleague.com}
   s.files = ["lib/wherelizer.rb", "lib/wherelizer/sexp_extensions.rb"]

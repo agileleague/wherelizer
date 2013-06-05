@@ -7,8 +7,8 @@ Tool for converting pre-arel deprecated ActiveRecord queries into new-style Acti
 
     require 'wherelizer'
 
-    Wherelizer.new( %q|WikiPage.all(:conditions => {:campaign_id => 5, :name => "Cool"})| ).convert
-    => "WikiPage.where(campaign_id: 5).where(name: \"Cool\")"
+    Wherelizer.new( %q|Page.all(:conditions => {:content_id => 5, :name => "Cool"})| ).convert
+    => "Page.where(content_id: 5).where(name: \"Cool\")"
 
-    Wherelizer.new( %q|@pages = @blog.pages.first(:conditions => {:campaign_id => 5, :name => "Cool"})|).convert
-    => "@pages = @blog.pages.where(campaign_id: 5).where(name: \"Cool\").first"
+    Wherelizer.new( %q|@pages = @blog.pages.first(:conditions => {:content_id => 5, :name => "Cool"})|).convert
+    => "@pages = @blog.pages.where(content_id: 5).where(name: \"Cool\").first"
