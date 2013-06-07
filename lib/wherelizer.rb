@@ -7,6 +7,8 @@ class Sexp
 end
 
 class Wherelizer
+  class ConvertException < Exception; end
+
   attr_accessor :orig, :parsed, :final, :ruby2ruby
 
   def initialize(orig)
@@ -26,6 +28,8 @@ class Wherelizer
     others = options_hash.map{|key, value| parse_basic_param(key, value)}.join
 
     "#{assignment}#{receiver}#{where}#{others}#{method_name}"
+  rescue => e
+    raise ConvertException.new("Unable to convert: #{e.message}")
   end
 
   def handle_assignment
